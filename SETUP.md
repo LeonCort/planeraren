@@ -7,9 +7,9 @@ Clerk-appen **Planeraren** är redan skapad (utvecklingsinstans). Där är Googl
 
 Kvar att göra, i den här ordningen:
 
-## 1. Koden till GitHub
+## 1. Koden till GitHub ✓
 
-Lägg koden i repot `LeonCort/kylskapet` (eller ett nytt repo, till exempel `planeraren`) och pusha till `main`.
+Koden ligger i `LeonCort/planeraren` (det tidigare namnet `kylskapet` pekar hit), gren `main`.
 
 ## 2. Convex (cirka 5 minuter)
 
@@ -19,13 +19,14 @@ Lägg koden i repot `LeonCort/kylskapet` (eller ett nytt repo, till exempel `pla
    - `CLERK_SECRET_KEY` = den hemliga nyckeln från Clerk (**Clerk → Planeraren → API keys → Secret key**, börjar med `sk_test_`)
 3. **Settings → General → Deploy keys**: skapa en **Production deploy key** och kopiera den.
 
-## 3. Vercel (cirka 5 minuter)
+## 3. Vercel
 
-1. **Add New → Project** och importera GitHub-repot. Ramverket (Vite) och byggkommandot hämtas från `vercel.json`.
-2. Under **Environment Variables**, för Production och Preview:
-   - `VITE_CLERK_PUBLISHABLE_KEY` = `pk_test_c2F2ZWQtdGljay02OTE4LmNsZXJrLmFjY291bnRzLmRldiQ`
-   - `CONVEX_DEPLOY_KEY` = deploy-nyckeln från steg 2
-3. Klicka på **Deploy**. Bygget publicerar först Convex-funktionerna och sedan sidan. `VITE_CONVEX_URL` sätts automatiskt.
+Projektet **planeraren** finns redan och är kopplat till repot. Sidan ligger på https://planeraren.vercel.app och varje push till `main` publiceras automatiskt. `VITE_CLERK_PUBLISHABLE_KEY` är redan satt.
+
+Kvar:
+
+1. **Vercel → planeraren → Settings → Environment Variables**: lägg till `CONVEX_DEPLOY_KEY` = deploy-nyckeln från steg 2, **bara för Production**. (En produktionsnyckel får inte användas i Preview-byggen; då avbryter Convex bygget.)
+2. **Deployments** → den senaste → **⋯ → Redeploy**. Bygget publicerar först Convex-funktionerna och sedan sidan. `VITE_CONVEX_URL` sätts automatiskt.
 
 Nu går det att logga in, skapa familjen, bjuda in och använda kylskåpet och lapparna. Google Kalender kräver steg 4.
 
@@ -41,7 +42,7 @@ Clerks delade Google-uppgifter räcker för inloggning men inte för kalenderbeh
    - `https://www.googleapis.com/auth/calendar.events`
    - `https://www.googleapis.com/auth/calendar.calendarlist.readonly`
 6. **Clients → Create client** → *Web application*:
-   - **Authorized JavaScript origins**: din Vercel-adress, till exempel `https://planeraren.vercel.app`
+   - **Authorized JavaScript origins**: din Vercel-adress, `https://planeraren.vercel.app`
    - **Authorized redirect URIs**: adressen från Clerk i steg 1
 7. Kopiera **Client ID** och **Client secret** till Clerk (steg 1) och spara.
 8. **Audience → Publish app** (läget *In production*).
