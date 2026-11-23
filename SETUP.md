@@ -45,6 +45,7 @@ Clerks delade Google-uppgifter räcker för inloggning men inte för kalenderbeh
    - **Authorized JavaScript origins**: din Vercel-adress, `https://planeraren.vercel.app`
    - **Authorized redirect URIs**: adressen från Clerk i steg 1
 7. Kopiera **Client ID** och **Client secret** till Clerk (steg 1) och spara.
+   Lägg också till de två kalender-adresserna från steg 5 under **Scopes** i Clerk (efter `openid email profile`, med mellanslag). Annars ersätts kalenderbehörigheten varje gång någon loggar in på en ny enhet.
 8. **Audience → Publish app** (läget *In production*).
    - Appen är då inte verifierad av Google. Vid första kopplingen visas en varning: välj *Avancerat → Gå till Planeraren*.
    - Upp till 100 personer kan koppla, och kopplingen slutar inte gälla efter 7 dagar som i testläget.
