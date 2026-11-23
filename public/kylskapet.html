@@ -27,7 +27,8 @@
 
 *{box-sizing:border-box}
 html.embed body{padding-block:6px 20px}
-@media (max-width:760px){html.embed body{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}}
+/* --sab/--sat: the phone's safe areas, sent in by Planeraren (inside a frame env(safe-area-inset-*) reads 0) */
+@media (max-width:760px){html.embed body{padding-bottom:calc(100px + var(--sab,env(safe-area-inset-bottom,0px)))}}
 /* inside Planeraren the window is a bit shorter: slightly tighter notes so two rows still fit */
 @media (min-width:900px) and (min-height:560px){
   html.embed .note{padding:14px 14px 12px;gap:6px}
@@ -54,7 +55,7 @@ button{cursor:pointer;background:none;border:0;padding:0}
 .pill:hover{transform:translateY(-1px);box-shadow:0 5px 0 var(--line)}
 .pill:active,.pill[aria-pressed="true"]{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
 .pill[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
-.pill.c1{background:var(--c1)}.pill.c2{background:var(--c2)}.pill.c3{background:var(--c3)}
+.pill.c1{background:var(--c1)}.pill.c2{background:var(--c2)}.pill.c3{background:var(--c3)}.pill.c4{background:var(--c4);color:#1d1740}
 .pill.ico{width:46px;padding:0}
 .pill svg{width:18px;height:18px}
 .seg{display:flex;gap:8px;flex-wrap:wrap}
@@ -242,12 +243,19 @@ canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 @keyframes wob{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg) scale(1.05)}}
 .hint{font-size:13px;font-weight:900;opacity:.75}
 
-/* modal */
-.scrim{position:fixed;inset:0;background:rgba(20,15,50,.55);display:grid;place-items:center;padding:16px;z-index:20}
-.sheet{background:var(--paper);border:4px solid var(--line);border-radius:24px;box-shadow:10px 10px 0 var(--line);width:min(520px,100%);max-height:100%;overflow:auto;padding:26px;display:grid;gap:18px}
+/* modal: above the top bar (z-index 30); while it is open Planeraren hides its bottom bar */
+.scrim{position:fixed;inset:0;background:rgba(20,15,50,.55);display:grid;place-items:center;grid-template-columns:minmax(0,1fr);justify-items:center;z-index:40;overscroll-behavior:contain;
+  padding:max(16px,var(--sat,env(safe-area-inset-top,0px))) max(16px,env(safe-area-inset-right,0px)) max(16px,var(--sab,env(safe-area-inset-bottom,0px))) max(16px,env(safe-area-inset-left,0px))}
+.sheet{background:var(--paper);border:4px solid var(--line);border-radius:24px;box-shadow:10px 10px 0 var(--line);width:min(520px,100%);min-width:0;
+  max-height:calc(100dvh - 32px - var(--sat,env(safe-area-inset-top,0px)) - var(--sab,env(safe-area-inset-bottom,0px)));overflow:auto;overscroll-behavior:contain;padding:26px;display:grid;gap:18px}
+.sheet>*{min-width:0}
 .sheet h2{font-size:38px}
 .f{display:grid;gap:6px}
 .f input,.f select{min-height:50px;border:3px solid var(--line);border-radius:14px;background:var(--bg);padding:0 14px;font-size:17px;font-weight:800;width:100%}
+/* iOS draws date inputs at their own width and centres the text: keep them inside the sheet */
+.f input[type=date]{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;line-height:44px}
+.f input::-webkit-date-and-time-value{text-align:left;margin:0}
+.f select{max-width:100%;min-width:0}
 .types{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .types .pill{min-height:44px;font-size:13px}
 .swatches{display:flex;gap:8px;flex-wrap:wrap}
@@ -295,7 +303,12 @@ canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
   .poster .mid{grid-template-columns:1fr}
   .facts{grid-template-columns:1fr 1fr}
   .poster{min-height:0}
-  .types{grid-template-columns:1fr}
+  .types{grid-template-columns:1fr 1fr}
+  .sheet{padding:20px 16px;gap:14px;box-shadow:6px 6px 0 var(--line);border-radius:22px}
+  .sheet h2{font-size:30px}
+  .acts .pill{flex:1 1 0}
+  .swatches{gap:6px}
+  .sw{width:min(38px,calc((100% - 30px) / 6));height:auto;aspect-ratio:1}
   /* phone header: row 1 = tabs + round "+" button, row 2 = the two dropdowns + theme */
   .top{gap:10px 8px}
   .ctl{display:contents}

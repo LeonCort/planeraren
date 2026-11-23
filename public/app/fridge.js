@@ -487,6 +487,10 @@ if(EMBED){document.documentElement.classList.add("embed");
     const mine=JSON.stringify(S.trackers.filter(t=>t.src!=="gcal"));if(mine===JSON.stringify(e.data.shared))return;
     S.trackers=[...JSON.parse(JSON.stringify(e.data.shared)),...S.trackers.filter(t=>t.src==="gcal")];
     if(!document.getElementById("ed"))render()});
+  /* the phone's safe areas, measured by Planeraren (a frame reads env(safe-area-inset-*) as 0) */
+  addEventListener("message",e=>{if(e.source!==parent||!e.data||!e.data.insets)return;const r=document.documentElement.style;r.setProperty("--sab",e.data.insets.bottom+"px");r.setProperty("--sat",e.data.insets.top+"px")});
+  /* tell Planeraren when a sheet is open, so it can hide its bottom bar */
+  let modal=false;new MutationObserver(()=>{const m=!!document.getElementById("ed");if(m!==modal){modal=m;try{parent.postMessage({modal:m},"*")}catch{}}}).observe(document.body,{childList:true});
   try{parent.postMessage({ready:1,trackers:S.trackers},"*")}catch{}}
 applyTheme();render();
 setInterval(()=>{const k=iso(today());if(k!==render.day){render.day=k;render()}},60000);render.day=iso(today());

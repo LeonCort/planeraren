@@ -782,6 +782,11 @@ async function gInit(){
 
 
 const fridge=document.getElementById("fridge");
+/* a frame reads env(safe-area-inset-*) as 0, so measure the phone's safe areas here and send them in */
+const insetProbe=Object.assign(document.createElement("div"),{style:"position:fixed;left:0;top:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)"});
+document.body.appendChild(insetProbe);
+function sendInsets(){if(!fridge.src)return;const cs=getComputedStyle(insetProbe);try{fridge.contentWindow?.postMessage({insets:{top:parseFloat(cs.paddingTop)||0,bottom:parseFloat(cs.paddingBottom)||0}},"*")}catch{}}
+addEventListener("resize",sendInsets);
 function showFridge(on){
   if(on&&!fridge.src)fridge.src="kylskapet.html?embed";
   fridge.hidden=!on;
@@ -789,7 +794,8 @@ function showFridge(on){
 }
 addEventListener("message",e=>{
   if(e.source!==fridge.contentWindow||!e.data)return;
-  if(e.data.ready){fridge.contentWindow.postMessage({theme:S.theme},"*");syncFridge()}
+  if(e.data.ready){fridge.contentWindow.postMessage({theme:S.theme},"*");sendInsets();syncFridge()}
+  if(e.data.modal!==undefined)document.documentElement.classList.toggle("fmodal",!!e.data.modal);
   if(e.data.hideGcal){const k=G.ids.get(e.data.hideGcal);if(k){S.gc.lv[k]="plan";save()}}
   if(e.data.themeNow!==undefined&&e.data.themeNow!==S.theme){S.theme=e.data.themeNow;applyTheme();save()}
   if(Array.isArray(e.data.trackers)&&e.data.trackers.length){TRACKERS=e.data.trackers;if(S.view!=="kyl")render()}
