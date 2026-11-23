@@ -1,0 +1,42 @@
+/* Sign-in, start and family screens, in the same chunky paper-note look as the planner */
+.gate{position:fixed;inset:0;z-index:50;display:grid;place-items:start center;overflow:auto;background:var(--bg);
+  padding:max(28px,env(safe-area-inset-top,0px)) 16px max(28px,env(safe-area-inset-bottom,0px))}
+.gate[hidden]{display:none}
+.gcard{position:relative;width:min(440px,100%);margin-top:6vh;background:var(--paper);color:var(--ink);border:4px solid var(--line);
+  border-radius:22px;box-shadow:8px 8px 0 var(--line);padding:22px 20px 20px;font-family:var(--f-body);font-weight:800}
+.gbrand{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.glogo{width:40px;height:40px;border:3px solid var(--line);border-radius:12px;background:var(--c2);box-shadow:3px 3px 0 var(--line);
+  background-image:linear-gradient(var(--line),var(--line));background-size:100% 3px;background-position:0 12px;background-repeat:no-repeat;transform:rotate(-4deg)}
+.gdisp{font-family:var(--f-display);font-weight:400;letter-spacing:.3px;margin:6px 0 4px;line-height:1.05}
+h1.gdisp{font-size:30px;margin:0}
+h2.gdisp{font-size:24px}
+.gcard h3{font-family:var(--f-display);font-weight:400;font-size:17px;margin:18px 0 4px}
+.glead{color:var(--muted);font-size:15px;line-height:1.4;margin:4px 0 12px}
+.gerr{background:var(--c1);color:#1d1740;border:3px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0}
+.gform{display:grid;gap:10px;margin:10px 0 4px}
+.gform[hidden]{display:none}
+.gform label{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.gform input{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:3px solid var(--line);border-radius:12px;padding:10px 12px;min-height:46px}
+.gform input:focus-visible{outline:3px solid var(--c3);outline-offset:2px}
+.gbtn{font:inherit;font-weight:900;font-size:15px;cursor:pointer;min-height:46px;padding:0 18px;border:3px solid var(--line);border-radius:999px;
+  background:var(--c2);color:#1d1740;box-shadow:0 4px 0 var(--line);transition:transform .08s,box-shadow .08s}
+.gbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.gbtn:disabled{opacity:.6;cursor:default}
+.gbtn.sm{min-height:40px;font-size:13.5px;padding:0 14px}
+.gbtn.ghost{background:var(--paper);color:var(--ink)}
+.gbtn.bad{color:#c23a2c}
+.glink{font:inherit;font-weight:900;font-size:14px;background:none;border:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px}
+.gswap{margin:6px 0 0;text-align:center}
+#signin{display:flex;justify-content:center;margin-top:8px}
+.gsheet{position:fixed;inset:0;z-index:60;display:grid;place-items:start center;overflow:auto;background:rgba(13,10,31,.45);padding:16px}
+.gsheet .gcard{margin-top:4vh}
+.gx{position:absolute;top:10px;right:10px;width:40px;height:40px;border:3px solid var(--line);border-radius:50%;background:var(--paper);
+  color:var(--ink);font:900 22px/1 var(--f-body);cursor:pointer}
+.gmembers{list-style:none;padding:0;margin:6px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+.gmembers li{display:flex;align-items:center;gap:6px;border:3px solid var(--line);border-radius:999px;padding:4px 12px 4px 6px;background:var(--bg);font-size:14px}
+.gmembers small{color:var(--muted)}
+.gdot{width:18px;height:18px;border-radius:50%;border:3px solid var(--line)}
+.gcode{display:flex;align-items:center;justify-content:space-between;gap:10px;border:3px dashed var(--line);border-radius:14px;padding:10px 12px}
+.gcode b{font-family:var(--f-display);font-weight:400;font-size:26px;letter-spacing:3px}
+.grow{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+@media (max-width:760px){.act .famb{display:none}}

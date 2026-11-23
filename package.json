@@ -1,0 +1,21 @@
+{
+  "name": "planeraren",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:backend": "convex dev",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@clerk/clerk-js": "^6.0.0",
+    "@clerk/localizations": "latest",
+    "convex": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "latest"
+  }
+}

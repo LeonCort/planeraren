@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="sv">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kylskåpet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
+<style>
+/* Layout: the family fridge. Hand-made notes (one per event) stuck on with magnets, slightly askew.
+   Each note has its own candy colour, a chunky outline and a paper shadow. Kids count "nätter" (sleeps).
+   Tap a note → it becomes a huge poster with one giant number and a tap-to-celebrate confetti burst. */
+:root{
+  --bg:#fbf3e4; --board:#f3e6cf; --ink:#1d1740; --paper:#fffaf0; --muted:#6e6788; --line:#1d1740;
+  --c1:#ff6b5b; --c2:#ffcb3d; --c3:#5ec8ff; --c4:#6fe3a1; --c5:#c58bff; --c6:#ff9ad5; --numfill:#fffaf0; --numline:#1d1740; --note-ink:#1d1740;
+  --f-display:"Lilita One","Arial Black","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Nunito","Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#17132e;--board:#201a40;--ink:#fff7e8;--paper:#2a2350;--muted:#a9a2c7;--line:#0d0a1f;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#17132e;--board:#201a40;--ink:#fff7e8;--paper:#2a2350;--muted:#a9a2c7;--line:#0d0a1f;color-scheme:dark}
+:root:root[data-dt="light"]{--bg:#fbf3e4;--board:#f3e6cf;--ink:#1d1740;--paper:#fffaf0;--muted:#6e6788;--line:#1d1740;color-scheme:light}
+:root:root[data-dt="dark"]{--bg:#17132e;--board:#201a40;--ink:#fff7e8;--paper:#2a2350;--muted:#a9a2c7;--line:#0d0a1f;color-scheme:dark}
+
+*{box-sizing:border-box}
+html.embed body{padding-block:6px 20px}
+@media (max-width:760px){html.embed body{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}}
+/* inside Planeraren the window is a bit shorter: slightly tighter notes so two rows still fit */
+@media (min-width:900px) and (min-height:560px){
+  html.embed .note{padding:14px 14px 12px;gap:6px}
+  html.embed .notes.many .note{padding:12px 12px 10px}
+  html.embed .notes.many .note .num{font-size:clamp(44px,3.6vw,62px)}
+  html.embed .note .sub{font-size:11px}
+  html.embed .board{padding-block:14px 10px}
+}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-weight:800;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 56px;min-height:100%;
+  background-image:radial-gradient(color-mix(in srgb,var(--ink) 7%,transparent) 1.2px,transparent 1.3px);background-size:22px 22px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+:focus-visible{outline:4px solid var(--c3);outline-offset:3px;border-radius:14px}
+.wrap{max-width:1360px;margin:0 auto}
+
+.disp{font-family:var(--f-display);font-weight:400;line-height:.92;letter-spacing:.005em;margin:0;text-wrap:balance}
+.num{font-family:var(--f-display);line-height:.85;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.lbl{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.muted{color:var(--muted)}
+
+/* chunky pill buttons */
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 18px;border:3px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font-weight:900;font-size:14px;box-shadow:0 4px 0 var(--line);transition:transform .08s,box-shadow .08s;white-space:nowrap}
+.pill:hover{transform:translateY(-1px);box-shadow:0 5px 0 var(--line)}
+.pill:active,.pill[aria-pressed="true"]{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.pill[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.pill.c1{background:var(--c1)}.pill.c2{background:var(--c2)}.pill.c3{background:var(--c3)}
+.pill.ico{width:46px;padding:0}
+.pill svg{width:18px;height:18px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+
+/* top */
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px 20px;flex-wrap:wrap;margin-bottom:14px}
+.today-pill{background:var(--ink);color:var(--bg);box-shadow:none;cursor:default}
+.brand{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.brand h1{font-size:clamp(38px,6vw,64px)}
+.brand h1 span{display:inline-block;transform:rotate(-4deg);color:var(--c1);-webkit-text-stroke:2px var(--line);text-stroke:2px var(--line);paint-order:stroke fill}
+.ctl{display:flex;gap:10px 12px;flex-wrap:wrap;align-items:center}
+.lead{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap;min-width:0}
+/* tabs: same chunky pills, the active one is ink-filled */
+.tabs{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;max-width:calc(100% + 12px);padding:3px 6px 9px;margin:-3px -6px -9px}
+.tabs::-webkit-scrollbar{display:none}
+.tabs .pill{flex:none}
+.tabs .pill[aria-selected="true"]{background:var(--ink);color:var(--bg);transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.tabs .cnt{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--c2);color:#1d1740;border:2px solid var(--line);font-size:11px;margin-left:2px}
+/* custom roll-down menu, styled like the rest of the fridge */
+.top{position:relative;z-index:30}
+.dd{position:relative;display:inline-flex}
+.dd>.pill{padding-right:40px;position:relative;width:100%}
+.dd>.pill>span{overflow:hidden;text-overflow:ellipsis}
+.dd>.pill svg{position:absolute;right:14px;top:50%;width:16px;height:16px;margin-top:-8px;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.dd.open>.pill svg{transform:rotate(180deg)}
+.dd.open>.pill{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.ddm{position:absolute;top:calc(100% + 12px);left:0;min-width:100%;width:max-content;margin:0;padding:8px;list-style:none;display:grid;gap:6px;background:var(--paper);color:var(--ink);border:3px solid var(--line);border-radius:22px;box-shadow:6px 6px 0 var(--line);transform-origin:50% 0;transform:perspective(600px) rotateX(-80deg) scaleY(.4);opacity:0;visibility:hidden;transition:transform .32s cubic-bezier(.3,1.5,.5,1),opacity .18s,visibility 0s .32s}
+.dd.r .ddm{left:auto;right:0}
+.ddm::before{content:"";position:absolute;top:-10px;left:26px;width:14px;height:14px;background:var(--paper);border:3px solid var(--line);border-right:0;border-bottom:0;transform:rotate(45deg);border-radius:4px 0 0 0}
+.dd.r .ddm::before{left:auto;right:26px}
+.dd.open .ddm{transform:none;opacity:1;visibility:visible;transition:transform .42s cubic-bezier(.3,1.5,.5,1),opacity .15s,visibility 0s}
+.ddm button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:0 16px 0 12px;border:3px solid transparent;border-radius:16px;background:transparent;color:inherit;font-weight:900;font-size:14px;cursor:pointer;text-align:left;white-space:nowrap;opacity:0;transform:translateY(-8px)}
+.dd.open .ddm button{opacity:1;transform:none;transition:opacity .2s calc(var(--k) * 45ms + 80ms),transform .35s cubic-bezier(.3,1.6,.5,1) calc(var(--k) * 45ms + 80ms),background .1s}
+.ddm button:hover,.ddm button:focus-visible{background:var(--c2);border-color:var(--line);outline:none;color:#1d1740}
+.ddm button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--line)}
+.ddm .ck{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;border:2.5px solid currentColor;flex:none}
+.ddm .ck svg{width:13px;height:13px;opacity:0}
+.ddm button[aria-selected="true"] .ck{background:var(--c2);border-color:var(--c2);color:#1d1740}
+.ddm button[aria-selected="true"] .ck svg{opacity:1}
+
+/* fridge board */
+/* the notes sit straight on the page: no fridge frame around them */
+.board{padding:clamp(14px,2vw,22px) 4px clamp(14px,2vw,22px);position:relative}
+.notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:clamp(18px,3vw,34px);align-items:start}
+
+.note{--c:var(--c2);position:relative;border:4px solid var(--line);border-radius:22px;padding:22px 20px 18px;color:var(--note-ink);text-align:left;display:grid;gap:12px;box-shadow:8px 8px 0 var(--line);transform:rotate(var(--r,0deg));transition:transform .15s,box-shadow .15s;min-width:0;width:100%}
+.note:hover{transform:rotate(0deg) translateY(-6px) scale(1.02);box-shadow:12px 14px 0 var(--line);z-index:2}
+.note::before{content:"";position:absolute;top:-16px;left:50%;width:30px;height:30px;margin-left:-15px;border-radius:50%;background:var(--magnet,var(--c1));border:4px solid var(--line);box-shadow:inset -4px -4px 0 rgba(0,0,0,.18)}
+.note.today{--c:var(--c2)}
+.note .who{font-size:clamp(26px,2.6vw,36px);padding-right:64px}
+.note .big{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.note .num{font-size:clamp(84px,9vw,124px);color:var(--numfill);-webkit-text-stroke:3px var(--numline);paint-order:stroke fill;text-shadow:5px 5px 0 var(--numline)}
+.unit{display:inline-block;font-family:var(--f-display);font-weight:400;text-transform:uppercase;letter-spacing:.05em;line-height:1;background:var(--numfill);color:var(--note-ink);border:3px solid var(--line);border-radius:12px;padding:6px 12px 5px;box-shadow:3px 3px 0 var(--line);transform:rotate(-3deg);transform-origin:0 0;align-self:center}
+.note .unit{font-size:clamp(15px,1.5vw,19px)}
+.note .sub{font-size:13px;font-weight:800;opacity:.85}
+.note .date{position:absolute;right:14px;top:12px;background:var(--numfill);color:var(--note-ink);border:3px solid var(--line);border-radius:10px;padding:3px 8px;font-size:11px;font-weight:900;transform:rotate(3deg)}
+
+/* sleeps: outlined moons that fill in as nights pass */
+.moons{display:flex;flex-wrap:wrap;gap:var(--g,6px);--d:16px;--acc:#ffd84d}
+.th-jul .moons{--acc:#8ff0b0}.th-spok .moons{--acc:#a6ff5c}.th-pask .moons{--acc:#c58bff}.th-kalas .moons{--acc:#ff9ad5}
+/* weeks: a little week strip with seven day-dots; lit dots are the days in that week still to go (or gone, counting up) */
+.wk{width:calc(var(--d) * 1.6);height:var(--d);border:max(2px,calc(var(--d) * .09)) solid var(--note-ink);border-radius:calc(var(--d) * .28);flex:none;display:grid;grid-template-columns:repeat(7,1fr);align-items:center;justify-items:center;padding:0 calc(var(--d) * .1);background:transparent;position:relative}
+.wk b{width:calc(var(--d) * .13);height:calc(var(--d) * .13);border-radius:50%;background:var(--note-ink);opacity:.35}
+.wk.on,.wk.now{background:var(--acc)}
+.wk.on b,.wk b.lit{opacity:1;width:calc(var(--d) * .16);height:calc(var(--d) * .16)}
+.wk.now{animation:pulse 1.4s ease-in-out infinite}
+/* months: calendar leaves with the real month written on them */
+.mo{width:var(--d);height:calc(var(--d) * 1.18);border:max(2px,calc(var(--d) * .09)) solid var(--note-ink);border-radius:calc(var(--d) * .14);flex:none;position:relative;display:grid;grid-template-rows:28% 1fr;background:transparent;color:var(--note-ink)}
+.mo::before{content:"";background:var(--note-ink);opacity:.35;border-radius:calc(var(--d) * .05) calc(var(--d) * .05) 0 0}
+.mo span{display:grid;place-items:center;font-family:var(--f-display);font-size:calc(var(--d) * .34);line-height:1;letter-spacing:.02em;text-transform:uppercase;opacity:.45}
+.mo.on,.mo.now{background:var(--numfill);color:#1d1740}
+.mo.on::before,.mo.now::before{background:var(--acc);opacity:1;border-bottom:max(1px,calc(var(--d) * .05)) solid var(--line)}
+.mo.on span,.mo.now span{opacity:1}
+.mo.now::after{content:"";position:absolute;left:0;bottom:0;border-radius:0 0 0 calc(var(--d) * .05);height:calc(var(--d) * .12);width:var(--p);background:var(--acc);border-top:1px solid var(--line)}
+.mo.now{animation:pulse 1.4s ease-in-out infinite}
+/* the month of the day itself: its date sits in the top band, like a real calendar page */
+.mo em{position:absolute;left:0;right:0;top:0;height:28%;display:grid;place-items:center;font-style:normal;font-family:var(--f-display);font-size:calc(var(--d) * .22);line-height:1;color:var(--note-ink);z-index:1}
+.mo.goal.on em,.mo.goal.now em{color:#1d1740}
+/* the last marker (the day itself) is circled by hand, like on a paper calendar, and does not pulse */
+.moons{--ring:#e8263a}
+.th-jul .moons,.th-spok .moons{--ring:var(--note-ink)}
+.goal,.goal.now{animation:none}
+.ring{position:absolute;left:-26%;top:-24%;width:152%;height:148%;overflow:visible;pointer-events:none;z-index:2}
+.wk .ring{left:-14%;top:-36%;width:128%;height:172%}
+.ring path{fill:none;stroke:var(--ring);stroke-width:max(2px,calc(var(--d) * .1));stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:1;animation:draw .7s .35s cubic-bezier(.5,0,.3,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.moon{width:var(--d);height:var(--d);border-radius:50%;border:3px solid var(--note-ink);background:transparent;position:relative;flex:none}
+.moon.on{background:var(--note-ink);box-shadow:inset calc(var(--d) * .3) calc(var(--d) * -.18) 0 0 #ffd84d}
+.moons.wave .moon,.moons.wave .wk,.moons.wave .mo{animation:wave .55s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--i) * 14ms)}
+@keyframes wave{0%,100%{transform:scale(1)}40%{transform:scale(1.45) rotate(-14deg)}}
+.moon.now{background:conic-gradient(#ffd84d var(--p),transparent 0);animation:pulse 1.4s ease-in-out infinite}
+.moons .more{font-size:12px;font-weight:900;align-self:center}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+
+/* themes: same recipe for every kind of card (faint pattern + one round sticker), different motif per kind */
+.note,.poster{background-color:var(--c);background-size:54px 54px}
+.stk{position:absolute;right:-12px;bottom:-12px;width:54px;height:54px;border-radius:50%;background:var(--numfill);border:3px solid var(--line);display:grid;place-items:center;transform:rotate(10deg);transform-origin:0 0;box-shadow:3px 3px 0 var(--line);z-index:1}
+.stk svg{width:62%;height:62%;stroke:var(--note-ink);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.poster .stk{right:clamp(18px,3vw,40px);top:clamp(18px,3vw,40px);bottom:auto;width:clamp(72px,9vw,132px);height:clamp(72px,9vw,132px);border-width:4px;box-shadow:5px 5px 0 var(--line)}
+.poster.party .stk{animation:wob 1.2s ease-in-out infinite}
+/* Julafton: tomato-red card, a string of fairy lights along the top, falling snow, a snow drift along the bottom */
+.note.th-jul,.poster.th-jul{--c:#f2483d!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 90' fill='%23fffaf0' opacity='.85'%3E%3Ccircle cx='12' cy='20' r='2.4'/%3E%3Ccircle cx='52' cy='8' r='1.8'/%3E%3Ccircle cx='78' cy='34' r='2.6'/%3E%3Ccircle cx='30' cy='52' r='1.6'/%3E%3Ccircle cx='66' cy='70' r='2.2'/%3E%3Ccircle cx='8' cy='80' r='1.8'/%3E%3C/svg%3E"),var(--pat)!important;background-size:90px 90px,54px 54px!important}
+.th-jul .moon.on{box-shadow:inset calc(var(--d) * .3) calc(var(--d) * -.18) 0 0 #8ff0b0}
+.th-jul .stk{background:#6fe3a1}
+.note.th-jul::after,.poster.th-jul::after{content:"";position:absolute;left:10px;right:10px;top:-3px;height:24px;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 30'%3E%3Cpath d='M0 5Q16 17 32 5T64 5' fill='none' stroke='%231d1740' stroke-width='2'/%3E%3Cg stroke='%231d1740' stroke-width='1.6'%3E%3Crect x='7' y='9' width='6' height='4' rx='1' fill='%231d1740'/%3E%3Cellipse cx='10' cy='19' rx='5' ry='7' fill='%23ffd84d'/%3E%3Crect x='23' y='11' width='6' height='4' rx='1' fill='%231d1740'/%3E%3Cellipse cx='26' cy='21' rx='5' ry='7' fill='%236fe3a1'/%3E%3Crect x='39' y='9' width='6' height='4' rx='1' fill='%231d1740'/%3E%3Cellipse cx='42' cy='19' rx='5' ry='7' fill='%235ec8ff'/%3E%3Crect x='53' y='6' width='6' height='4' rx='1' fill='%231d1740'/%3E%3Cellipse cx='56' cy='16' rx='5' ry='7' fill='%23fffaf0'/%3E%3C/g%3E%3C/svg%3E") repeat-x 0 0/48px 24px}
+.note.th-jul>.sub{position:relative}
+.note.th-jul::before,.note.th-jul .date{z-index:2}
+.note.th-jul::after{right:74px}
+.note.th-jul{padding-top:30px;padding-bottom:28px}
+.note.th-jul .moons{position:relative;z-index:1}
+.th-jul .drift{position:absolute;left:0;right:0;bottom:0;height:20px;pointer-events:none;border-bottom-left-radius:inherit;border-bottom-right-radius:inherit;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 20'%3E%3Cpath d='M0 20V12Q8 2 17 10Q25 1 34 9Q44 0 52 9Q56 6 60 10V20Z' fill='%23fffaf0' stroke='%231d1740' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") repeat-x bottom/60px 20px}
+.poster.th-jul::after{top:-4px;height:40px;background-size:80px 40px;left:24px;right:24px}
+.poster.th-jul .drift{height:34px;background-size:100px 34px}
+.poster.th-jul .who{margin-top:16px}
+/* Nyårsafton: midnight-blue card, light text, gold pattern, fireworks bursting in the corners and gold moons */
+.note.th-nyar,.poster.th-nyar{--c:#2b2370!important;--note-ink:#fffaf0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke-width='3' stroke-linecap='round'%3E%3Cg stroke='%23ffd84d'%3E%3Cpath d='M50 38V14M50 62v24M38 50H14M62 50h24M41 41 24 24M59 59l17 17M41 59 24 76M59 41l17-17'/%3E%3C/g%3E%3Cg fill='%23ff9ad5'%3E%3Ccircle cx='50' cy='8' r='3'/%3E%3Ccircle cx='50' cy='92' r='3'/%3E%3Ccircle cx='8' cy='50' r='3'/%3E%3Ccircle cx='92' cy='50' r='3'/%3E%3C/g%3E%3Cg fill='%235ec8ff'%3E%3Ccircle cx='19' cy='19' r='3'/%3E%3Ccircle cx='81' cy='81' r='3'/%3E%3Ccircle cx='19' cy='81' r='3'/%3E%3Ccircle cx='81' cy='19' r='3'/%3E%3C/g%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke-width='3' stroke-linecap='round'%3E%3Cg stroke='%23ffd84d'%3E%3Cpath d='M50 38V14M50 62v24M38 50H14M62 50h24M41 41 24 24M59 59l17 17M41 59 24 76M59 41l17-17'/%3E%3C/g%3E%3Cg fill='%23ff9ad5'%3E%3Ccircle cx='50' cy='8' r='3'/%3E%3Ccircle cx='50' cy='92' r='3'/%3E%3Ccircle cx='8' cy='50' r='3'/%3E%3Ccircle cx='92' cy='50' r='3'/%3E%3C/g%3E%3Cg fill='%235ec8ff'%3E%3Ccircle cx='19' cy='19' r='3'/%3E%3Ccircle cx='81' cy='81' r='3'/%3E%3Ccircle cx='19' cy='81' r='3'/%3E%3Ccircle cx='81' cy='19' r='3'/%3E%3C/g%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 70' fill='%23ffd84d' opacity='.5'%3E%3Cpath d='M14 6l1.6 4.4L20 12l-4.4 1.6L14 18l-1.6-4.4L8 12l4.4-1.6z'/%3E%3Ccircle cx='48' cy='20' r='1.8'/%3E%3Ccircle cx='34' cy='44' r='1.4' fill='%23ff9ad5'/%3E%3Cpath d='M56 46l1.2 3.3 3.3 1.2-3.3 1.2L56 55l-1.2-3.3-3.3-1.2 3.3-1.2z' fill='%235ec8ff'/%3E%3Ccircle cx='10' cy='58' r='1.6'/%3E%3C/svg%3E")!important;background-size:64px 64px,0 0,120px 120px!important;background-repeat:no-repeat,no-repeat,repeat!important;background-position:right -26px top 52px,0 0,0 0!important}
+.poster.th-nyar{background-size:210px 210px,150px 150px,150px 150px!important;background-position:left 40% bottom 6%,right 17% top 6px,0 0!important}
+.th-nyar .unit,.th-nyar .date,.th-nyar .fact{color:#1d1740}
+.th-nyar .stk{background:#ffd84d}.th-nyar .stk svg{stroke:#1d1740}
+.th-nyar .moon.on{background:#ffd84d;box-shadow:inset calc(var(--d) * -.14) calc(var(--d) * -.12) 0 0 #e8a91a}
+.note.th-nyar .num,.poster.th-nyar .num{text-shadow:5px 5px 0 #ff9ad5}
+.poster.th-nyar .num{text-shadow:10px 10px 0 #ff9ad5}
+/* Halloween: pumpkin-orange card at night, a cobweb in the corner, glowing green moons */
+.note.th-spok,.poster.th-spok{--c:#ff8a2a!important}
+.th-spok .moon.on{box-shadow:inset calc(var(--d) * .3) calc(var(--d) * -.18) 0 0 #a6ff5c}
+.th-spok .stk{background:#1d1740}.th-spok .stk svg{stroke:#fffaf0}
+.note.th-spok::after,.poster.th-spok::after{content:"";opacity:.28;position:absolute;left:0;top:0;width:64px;height:64px;pointer-events:none;border-top-left-radius:inherit;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%231d1740' stroke-width='1.6' opacity='.55'%3E%3Cpath d='M0 0L60 60M0 0L64 28M0 0L28 64M0 0L64 6M0 0L6 64'/%3E%3Cpath d='M0 14Q8 8 14 0M0 28Q16 16 28 0M0 44Q24 24 44 0M0 60Q32 32 60 0'/%3E%3C/svg%3E") no-repeat}
+.poster.th-spok::after{width:140px;height:140px;background-size:140px}
+/* Påsk: pastel spring card, egg stickers in lilac, a strip of grass along the bottom */
+.note.th-pask,.poster.th-pask{--c:#ffe58a!important}
+.th-pask .moon.on{box-shadow:inset calc(var(--d) * .3) calc(var(--d) * -.18) 0 0 #c58bff}
+.th-pask .stk{background:#d9b8ff}
+.note.th-pask::after,.poster.th-pask::after{content:"";position:absolute;left:0;right:0;bottom:0;height:18px;pointer-events:none;border-bottom-left-radius:inherit;border-bottom-right-radius:inherit;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 18'%3E%3Cpath d='M0 18L3 4 6 18 9 2 12 18 15 6 18 18 21 1 24 18Z' fill='%236fe3a1' stroke='%231d1740' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") repeat-x bottom/24px 18px}
+.poster.th-pask::after{height:30px;background-size:40px 30px}
+/* Midsommar: meadow-green card, daisy stickers, a row of daisies and grass along the bottom */
+.note.th-mids,.poster.th-mids{--c:#b4e86a!important}
+.th-mids .moons{--acc:#ffd84d}
+.th-mids .stk{background:#fffaf0;color:#1d1740}
+.note.th-mids::after,.poster.th-mids::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22px;pointer-events:none;border-bottom-left-radius:inherit;border-bottom-right-radius:inherit;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 22'%3E%3Cpath d='M0 22L2 12 4 22 6 14 8 22 26 22 28 13 30 22 32 11 34 22 36 16 36 22Z' fill='%234fbf63' stroke='%231d1740' stroke-width='1.2' stroke-linejoin='round'/%3E%3Cpath d='M17 22V12' stroke='%231d1740' stroke-width='1.4'/%3E%3Cg fill='%23fffaf0' stroke='%231d1740' stroke-width='1.1'%3E%3Ccircle cx='17' cy='4.6' r='2.6'/%3E%3Ccircle cx='21.2' cy='7.6' r='2.6'/%3E%3Ccircle cx='19.6' cy='12.2' r='2.6'/%3E%3Ccircle cx='14.4' cy='12.2' r='2.6'/%3E%3Ccircle cx='12.8' cy='7.6' r='2.6'/%3E%3C/g%3E%3Ccircle cx='17' cy='8.6' r='2.4' fill='%23ffd84d' stroke='%231d1740' stroke-width='1.1'/%3E%3C/svg%3E") repeat-x bottom/36px 22px}
+.poster.th-mids::after{height:40px;background-size:66px 40px}
+.th-kalas .moon.on{box-shadow:inset calc(var(--d) * .3) calc(var(--d) * -.18) 0 0 #ff9ad5}
+
+/* while a note grows into a poster (or back), the real card is see-through: a ghost draws the card body,
+   and the shared pieces (title, number, unit badge, sticker, date line) fly from their old spot to the new one on top of it */
+.flipping.flipping.flipping{background-color:transparent!important;background-image:none!important;border-color:transparent!important;box-shadow:none!important;overflow:visible!important;transform:none!important;transition:none!important}
+.flipping.flipping.flipping::before,.flipping.flipping.flipping::after,.flipping .drift{opacity:0!important}
+.flipping .who,.flipping .num,.flipping .unit,.flipping .sub{position:relative;z-index:26}
+.flipping .stk{z-index:26}
+
+/* add note */
+.note.add{background:var(--paper);border-style:dashed;box-shadow:none;display:grid;place-items:center;min-height:200px;color:var(--muted)}
+.note.add::before{display:none}
+.note.add .who{font-size:28px}
+
+/* poster (detail) */
+.poster{--c:var(--c2);min-height:min(80vh,900px);border:5px solid var(--line);border-radius:32px;box-shadow:14px 14px 0 var(--line);padding:clamp(22px,4vw,56px);display:grid;grid-template-rows:auto 1fr auto;gap:20px;position:relative;overflow:hidden;color:var(--note-ink)}
+.poster .who{font-size:clamp(40px,7vw,112px);padding-right:clamp(90px,12vw,170px)}
+.poster .mid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.poster .num{font-size:clamp(130px,min(22vw,38vh),360px);color:var(--numfill);-webkit-text-stroke:5px var(--numline);paint-order:stroke fill;text-shadow:10px 10px 0 var(--numline);cursor:pointer;user-select:none;display:inline-block}
+.poster .num.word{font-size:clamp(90px,min(13vw,30vh),240px)}
+.poster .num:active{transform:scale(.96)}
+.poster .unit{font-size:clamp(22px,3vw,44px);padding:10px 20px 8px;border-radius:18px;border-width:4px;box-shadow:5px 5px 0 var(--line);margin:4px 0 10px}
+.poster .sub{font-size:clamp(15px,1.6vw,20px);font-weight:800}
+.poster .moons{--d:24px;--g:8px;align-content:start;cursor:pointer;min-height:60px}
+.poster .moons .moon{border-width:max(3px,calc(var(--d) * .09))}
+.side{display:grid;gap:18px;align-content:start}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fact{background:var(--numfill);color:var(--note-ink);border:3px solid var(--line);border-radius:16px;padding:12px 14px;display:grid;gap:4px;box-shadow:4px 4px 0 var(--line);transform:rotate(calc((var(--i) - 1.5) * .8deg))}
+.fnum{font-family:var(--f-display);font-weight:400;font-size:clamp(24px,2.4vw,36px);line-height:1}
+.fact span{font-size:13px;font-weight:800;line-height:1.25}
+.poster .foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+/* exact countdown: one small chunky tile per unit */
+.tick{display:flex;gap:8px;flex-wrap:wrap;margin:0}
+.tick .tu{display:grid;justify-items:center;min-width:46px;padding:6px 8px 5px;background:var(--paper);color:var(--ink);border:3px solid var(--line);border-radius:12px;box-shadow:3px 3px 0 var(--line);transform:rotate(var(--rt,0deg))}
+.tick .tu:nth-child(1){--rt:-2deg}.tick .tu:nth-child(2){--rt:1.5deg}.tick .tu:nth-child(3){--rt:-1deg}.tick .tu:nth-child(4){--rt:2deg;background:#ffd84d;color:#1d1740}
+.tick b{font-family:var(--f-display);font-weight:400;font-size:20px;line-height:1;font-variant-numeric:tabular-nums;display:block}
+.tick small{font-size:9.5px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;opacity:.75;margin-top:2px}
+.tick b.bump{animation:bump .35s cubic-bezier(.3,1.8,.5,1)}
+@keyframes bump{0%{transform:translateY(-35%) scale(.8);opacity:.3}100%{transform:none;opacity:1}}
+canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:30}
+.poster.party .num{animation:wob 1.2s ease-in-out infinite}
+@keyframes wob{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg) scale(1.05)}}
+.hint{font-size:13px;font-weight:900;opacity:.75}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(20,15,50,.55);display:grid;place-items:center;padding:16px;z-index:20}
+.sheet{background:var(--paper);border:4px solid var(--line);border-radius:24px;box-shadow:10px 10px 0 var(--line);width:min(520px,100%);max-height:100%;overflow:auto;padding:26px;display:grid;gap:18px}
+.sheet h2{font-size:38px}
+.f{display:grid;gap:6px}
+.f input,.f select{min-height:50px;border:3px solid var(--line);border-radius:14px;background:var(--bg);padding:0 14px;font-size:17px;font-weight:800;width:100%}
+.types{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.types .pill{min-height:44px;font-size:13px}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:38px;height:38px;border-radius:50%;border:3px solid var(--line);box-shadow:0 3px 0 var(--line)}
+.sw[aria-pressed="true"]{outline:4px solid var(--ink);outline-offset:2px}
+.err{color:var(--c1);font-weight:900}
+.acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.danger.armed{background:var(--c1)}
+
+/* Desktop: use the whole screen height. Smaller notes, more per row, board fills the viewport. */
+@media (min-width:900px) and (min-height:560px){
+  html{height:100%}
+  body{min-height:100%;display:flex;flex-direction:column;padding-block:14px 18px}
+  .wrap{flex:1;display:flex;flex-direction:column;width:100%}
+  .top{margin-bottom:12px}
+  .pill{min-height:40px;padding:0 14px;font-size:13px}
+  .pill.ico{width:40px}
+  .dd>.pill{padding-right:36px}
+  .board{flex:1;display:flex;padding:clamp(16px,2vw,26px);border-radius:22px}
+  .notes{flex:1;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:clamp(14px,2vw,24px) clamp(14px,1.8vw,22px);align-items:stretch;grid-auto-rows:1fr}
+  .note{padding:18px 16px 14px;gap:8px;box-shadow:6px 6px 0 var(--line);border-radius:18px;align-content:start}
+  .note::before{width:24px;height:24px;margin-left:-12px;top:-13px;border-width:3px}
+  .stk{width:44px;height:44px;right:-9px;bottom:-9px}
+  .note .who{font-size:clamp(20px,1.7vw,26px);padding-right:52px}
+  .note .num{font-size:clamp(60px,5.6vw,84px);-webkit-text-stroke:2px var(--numline);text-shadow:4px 4px 0 var(--numline)}
+  .note .unit{font-size:13px;padding:5px 9px 4px;border-width:2px;box-shadow:2px 2px 0 var(--line)}
+  .note .sub{font-size:12px;margin-top:auto}
+  .note .date{font-size:10px;padding:2px 6px;right:10px;top:10px}
+  .note.add{min-height:0}
+  /* only a few notes (one tab): one row of big notes */
+  .notes.few{grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))}
+  .notes.few .note{padding:26px 22px 20px;gap:14px}
+  .notes.few .note .who{font-size:clamp(26px,2.4vw,40px);padding-right:60px}
+  .notes.few .note .num{font-size:clamp(90px,8vw,150px);-webkit-text-stroke:3px var(--numline);text-shadow:6px 6px 0 var(--numline)}
+  .notes.few .note .unit{font-size:clamp(15px,1.3vw,20px)}
+  .notes.few .note .sub{font-size:14px}
+  .notes.many{grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr))}
+  .notes.many .note{padding:16px 13px 12px}
+  .notes.many .note .who{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere;font-size:clamp(16px,1.3vw,22px);padding-right:0;margin-top:14px}
+  .notes.many .note .num{font-size:clamp(50px,4.2vw,72px)}
+  .notes.many .note .date{top:8px;right:8px}
+  .note.add .who{font-size:22px;padding:0}
+}
+@media (max-width:680px){
+  .poster .mid{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr 1fr}
+  .poster{min-height:0}
+  .types{grid-template-columns:1fr}
+  /* phone header: row 1 = tabs + round "+" button, row 2 = the two dropdowns + theme */
+  .top{gap:10px 8px}
+  .ctl{display:contents}
+  .lead{order:1;flex:1 1 calc(100% - 60px);min-width:0;width:auto}
+  .today-pill{display:none}
+  [data-act=new]{order:2;width:46px;padding:0;flex:none}
+  [data-act=new] .txt{display:none}
+  [data-act=back]{width:46px;padding:0}
+  [data-act=back] .txt{display:none}
+  .ctl .dd{order:3;flex:1 1 0;min-width:0}
+  .ctl .dd>.pill{padding:0 28px 0 12px;font-size:12.5px;justify-content:flex-start}
+  .tabs .pill{padding:0 12px;font-size:13px}
+  .tabs .cnt{display:none}
+  .ctl .dd>.pill svg{right:10px}
+  .ctl [data-act=theme]{order:4;flex:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap" id="app"></div>
+<canvas class="fx" id="fx" hidden></canvas>
+
+<script src="/app/fridge.js"></script>
+</html>
