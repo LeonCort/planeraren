@@ -256,6 +256,25 @@ canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 .f input[type=date]{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;line-height:44px}
 .f input::-webkit-date-and-time-value{text-align:left;margin:0}
 .f select{max-width:100%;min-width:0}
+.dw{position:relative;display:block}
+.dph{display:none}
+/* iOS leaves an empty date field blank: show what it is for */
+@supports (-webkit-touch-callout:none){
+  .dph{position:absolute;left:17px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:17px;font-weight:800;pointer-events:none}
+  .dw:has(input:invalid) .dph{display:block}
+}
+/* phones: a sheet is its own screen, like a native one. It slides up and fills the screen,
+   the title stays on top, and the buttons sit in a bar at the bottom, above the home indicator */
+@media (max-width:760px){
+  .scrim{padding:0;place-items:stretch;grid-template-rows:minmax(0,1fr)}
+  .sheet{width:100%;height:100%;max-height:none;border:0;border-radius:0;box-shadow:none;display:flex;flex-direction:column;gap:18px;
+    padding:0 max(18px,env(safe-area-inset-right,0px)) 0 max(18px,env(safe-area-inset-left,0px));animation:sheetup .38s cubic-bezier(.2,.9,.25,1) both}
+  .sheet h2{position:sticky;top:0;z-index:2;margin:0 -18px;padding:max(18px,calc(var(--sat,env(safe-area-inset-top,0px)) + 10px)) 18px 12px;background:var(--paper);font-size:32px;border-bottom:3px solid color-mix(in srgb,var(--ink) 12%,transparent)}
+  .sheet .acts{position:sticky;bottom:0;z-index:2;margin:auto -18px 0;padding:12px 18px max(14px,calc(var(--sab,env(safe-area-inset-bottom,0px)) + 6px));background:var(--paper);border-top:3px solid color-mix(in srgb,var(--ink) 12%,transparent);flex-wrap:nowrap}
+  .sheet .acts .pill{flex:1 1 0;min-height:52px;font-size:16px}
+  .sheet .err{margin:0}
+}
+@keyframes sheetup{from{transform:translateY(100%)}to{transform:none}}
 .types{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .types .pill{min-height:44px;font-size:13px}
 .swatches{display:flex;gap:8px;flex-wrap:wrap}
@@ -304,9 +323,6 @@ canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
   .facts{grid-template-columns:1fr 1fr}
   .poster{min-height:0}
   .types{grid-template-columns:1fr 1fr}
-  .sheet{padding:20px 16px;gap:14px;box-shadow:6px 6px 0 var(--line);border-radius:22px}
-  .sheet h2{font-size:30px}
-  .acts .pill{flex:1 1 0}
   .swatches{gap:6px}
   .sw{width:min(38px,calc((100% - 30px) / 6));height:auto;aspect-ratio:1}
   /* phone header: row 1 = tabs + round "+" button, row 2 = the two dropdowns + theme */
