@@ -61,7 +61,8 @@ async function start() {
     localization: svSE,
     appearance: {
       variables: { colorPrimary: "#1d1740", fontFamily: "Nunito, 'Helvetica Neue', Arial, sans-serif", borderRadius: "14px" },
-      elements: { rootBox: { width: "100%", maxWidth: "100%" }, cardBox: { width: "100%", maxWidth: "100%" } },
+      /* deleting the account goes through the family menu, so the family data is cleaned up too */
+      elements: { profileSection__danger: { display: "none" }, rootBox: { width: "100%", maxWidth: "100%" }, cardBox: { width: "100%", maxWidth: "100%" } },
     },
   });
 
@@ -387,9 +388,14 @@ function openFamily() {
       <label>Ditt namn<input name="me" maxlength="40" value="${esc(B.me.name)}"></label>
       <button class="gbtn sm">Spara</button>
     </form>
-    <div class="grow">
+    <h3>Ditt konto</h3>
+    <div class="grow" style="margin-top:6px">
+      <button class="gbtn ghost" data-account>Kontoinställningar</button>
       <button class="gbtn ghost" data-out>Logga ut</button>
+    </div>
+    <div class="grow">
       <button class="gbtn ghost bad" data-leave>Lämna familjen</button>
+      <button class="gbtn ghost bad" data-delete>Ta bort mitt konto</button>
     </div>
   </div>`;
   el.querySelector("[data-x]").onclick = () => el.remove();
@@ -414,6 +420,25 @@ function openFamily() {
     toast("Sparat.");
   };
   el.querySelector("[data-out]").onclick = signOut;
+  el.querySelector("[data-account]").onclick = () => {
+    el.remove();
+    clerk.openUserProfile();
+  };
+  el.querySelector("[data-delete]").onclick = async () => {
+    const alone = B.members.length <= 1;
+    if (!confirm("Ta bort ditt konto för gott? Du lämnar " + B.family.name + (alone ? ", och eftersom du är sist kvar tas familjens kylskåp och lappar också bort." : ". Familjens lappar ligger kvar för de andra.") + " Inloggningen och Google-kopplingen tas bort.")) return;
+    try {
+      await B.flush();
+      await convex.action(api.account.deleteMe, {});
+    } catch (e) {
+      return toast("Det gick inte att ta bort kontot. Försök igen om en stund.");
+    }
+    clearLocal();
+    try {
+      await clerk.signOut();
+    } catch {}
+    location.replace("/");
+  };
   el.querySelector("[data-leave]").onclick = async () => {
     const alone = B.members.length <= 1;
     if (!confirm(alone ? "Du är sist kvar. Familjens kylskåp och lappar tas bort för gott. Lämna ändå?" : `Lämna ${B.family.name}? Du kan gå med igen med en ny inbjudan.`)) return;

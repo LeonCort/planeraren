@@ -146,7 +146,7 @@ const moreMenu=()=>`<div class="more" role="menu">
   ${G.avail?`<button role="menuitem" data-act="gcal">${I.cal}<span>Google Kalender<small>${S.gc.on?(G.state==="err"?"Något gick fel":"Kopplad"):"Inte kopplad"}</small></span></button>`:""}
   ${G.avail&&S.gc.on?`<button role="menuitem" data-act="rule">${NI.rule}<span>Vanlig vecka<small>Hämta & lämna-rytmen</small></span></button>`:""}
   <button role="menuitem" data-act="theme">${isDark()?I.sun:I.moon}<span>${isDark()?"Ljust läge":"Mörkt läge"}<small>Just nu ${isDark()?"mörkt":"ljust"}</small></span></button>
-  <button role="menuitem" data-act="family">${NI.fam}<span>${esc(B.family.name)}<small>Bjud in, namn, logga ut</small></span></button>
+  <button role="menuitem" data-act="family">${NI.fam}<span>${esc(B.family.name)}<small>Bjud in, namn, konto</small></span></button>
 </div>`;
 const tabs=()=>`<div class="tabs" role="tablist" aria-label="Läge">${VIEWS.map(([k,l])=>`<button class="pill ${isCal(k)?"":"tx"}" role="tab" data-view="${k}" aria-selected="${S.view===k}">${l}</button>`).join("")}</div>`;
 function header(title,sub){
@@ -165,7 +165,7 @@ function header(title,sub){
       <button class="pill" data-act="today">Idag</button>
       ${G.avail?`<button class="pill ico gcb ${G.state==="loading"?"loading":G.state==="err"?"err":!S.gc.on?"off":""}" data-act="gcal" aria-label="Google Kalender" title="Google Kalender">${I.cal}</button>`:""}
       <button class="pill ico" data-act="theme" aria-label="${isDark()?"Ljust läge":"Mörkt läge"}">${isDark()?I.sun:I.moon}</button>
-      <button class="pill ico famb" data-act="family" aria-label="${esc(B.family.name)}: bjud in, namn, logga ut" title="${esc(B.family.name)}">${NI.fam}</button>
+      <button class="pill ico famb" data-act="family" aria-label="${esc(B.family.name)}: bjud in, namn, konto" title="${esc(B.family.name)}">${NI.fam}</button>
       <button class="pill c2" data-act="new" aria-label="Ny lapp">${I.plus}<span class="txt"> Ny lapp</span></button>
     </div>
   </header>`;
