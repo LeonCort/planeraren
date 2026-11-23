@@ -382,7 +382,7 @@ function gFail(e){
   const r=gErr(e);G.state="err";G.msg=r.msg;
   if(r.drop){G.ev.clear();G.done.clear();G.loaded=false}
   if(r.gone){G.state="off"}
-  if(r.google){S.gc.on=false;G.state="off";save()}
+  if(r.google){G.state="off"} /* the Google token is missing here; keep the choice, it belongs to the person on every device */
   G.perm=!!r.perm;
   refreshUI();
 }
