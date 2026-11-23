@@ -61,6 +61,7 @@ async function start() {
     localization: svSE,
     appearance: {
       variables: { colorPrimary: "#1d1740", fontFamily: "Nunito, 'Helvetica Neue', Arial, sans-serif", borderRadius: "14px" },
+      elements: { rootBox: { width: "100%", maxWidth: "100%" }, cardBox: { width: "100%", maxWidth: "100%" } },
     },
   });
 

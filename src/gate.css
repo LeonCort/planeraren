@@ -40,3 +40,8 @@ h2.gdisp{font-size:24px}
 .gcode b{font-family:var(--f-display);font-weight:400;font-size:26px;letter-spacing:3px}
 .grow{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
 @media (max-width:760px){.act .famb{display:none}}
+/* keep the sign-in card inside narrow phones: Clerk's card has a fixed width of its own */
+.gate{grid-template-columns:minmax(0,1fr);justify-items:center}
+.gcard{min-width:0;max-width:100%}
+#signin>*,#signin .cl-rootBox,#signin .cl-cardBox{width:100%;max-width:100%;min-width:0}
+@media (max-width:480px){.gcard{padding:18px 12px 16px;box-shadow:5px 5px 0 var(--line)}}
