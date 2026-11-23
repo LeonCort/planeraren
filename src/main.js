@@ -390,12 +390,12 @@ function openFamily() {
     </form>
     <h3>Ditt konto</h3>
     <div class="grow" style="margin-top:6px">
-      <button class="gbtn ghost" data-account>Kontoinställningar</button>
-      <button class="gbtn ghost" data-out>Logga ut</button>
+      <button class="gbtn plain" data-account>Kontoinställningar</button>
+      <button class="gbtn plain" data-out>Logga ut</button>
     </div>
     <div class="grow">
-      <button class="gbtn ghost bad" data-leave>Lämna familjen</button>
-      <button class="gbtn ghost bad" data-delete>Ta bort mitt konto</button>
+      <button class="gbtn plain bad" data-leave>Lämna familjen</button>
+      <button class="gbtn plain bad" data-delete>Ta bort mitt konto</button>
     </div>
   </div>`;
   el.querySelector("[data-x]").onclick = () => el.remove();
