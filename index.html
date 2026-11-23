@@ -148,6 +148,7 @@ button.wk{border-radius:10px;transition:color .15s,background .15s,transform .1s
 .day .dots{display:flex;gap:3px;flex-wrap:wrap;margin-top:auto}
 .day .dots i{width:7px;height:7px;border-radius:50%;background:var(--th);border:1.5px solid var(--line)}
 @keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes sheetup{from{transform:translateY(100%)}to{transform:none}}
 
 /* hand-drawn ring around today, like a day circled on a paper calendar */
 .ring{position:absolute;left:-30%;top:-26%;width:160%;height:152%;overflow:visible;pointer-events:none}
@@ -540,6 +541,19 @@ button.nxt{cursor:pointer;font:inherit}
   .dayv .add-row{display:none}
   /* a sheet is open on the fridge: it gets the whole screen, the bottom bar steps aside */
   html.fmodal body:has(.fridge:not([hidden])) .bnav{display:none}
+  html.fmodal .fridge:not([hidden]){position:fixed;inset:0;width:100%;height:100%;margin:0;z-index:70}
+  /* phones: a sheet is its own screen, like a native one. It slides up and fills the screen,
+     the title stays on top, and the buttons sit in a bar at the bottom, above the home indicator */
+  /* a short message (OK) stays a small centred alert, like a native one */
+  .ed:not(:has([role=alertdialog])){padding:0;place-items:stretch;grid-template-rows:minmax(0,1fr)}
+  .ed .box:not([role=alertdialog]){width:100%;height:100%;max-height:none;border:0;border-radius:0;box-shadow:none;display:flex;flex-direction:column;gap:14px;
+    padding:max(18px,calc(env(safe-area-inset-top,0px) + 10px)) max(18px,env(safe-area-inset-right,0px)) 0 max(18px,env(safe-area-inset-left,0px));animation:sheetup .38s cubic-bezier(.2,.9,.25,1) both}
+  .ed .box:not([role=alertdialog])>*{flex:none;min-width:0}
+  .ed h3{font-size:30px}
+  .ed .btns{position:sticky;bottom:0;z-index:2;margin:auto -18px 0;padding:12px 18px max(14px,calc(env(safe-area-inset-bottom,0px) + 6px));background:var(--paper);border-top:3px solid color-mix(in srgb,var(--ink) 12%,transparent);flex-wrap:wrap}
+  .ed .btns .pill{flex:1 1 0;min-height:52px;font-size:16px}
+  .ed .add-row input{min-height:52px}
+  .ed .dlist{max-height:none}
   /* inputs under 16px make iPhone zoom in when you tap them */
   .gopts input[type=time],.gopts select{font-size:16px}
   /* small round delete buttons: bigger finger target without changing the look */

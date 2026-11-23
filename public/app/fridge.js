@@ -385,18 +385,18 @@ function openEditor(t){draft=t?{...t}:{id:null,type:S.tab==="stora"?"yearly":"bi
 function renderEditor(err){
   let el=document.getElementById("ed");if(!el){el=document.createElement("div");el.id="ed";el.className="scrim";document.body.appendChild(el)}
   const t=draft,isW=t.type==="weekly";
-  el.innerHTML=`<form class="sheet" aria-labelledby="edh">
+  el.innerHTML=`<form class="sheet" aria-labelledby="edh" novalidate>
     <h2 class="disp" id="edh">${t.id?"Ändra lappen":"Ny lapp"}</h2>
     <div class="f"><span class="lbl muted">Vad räknar vi till?</span><div class="types">${Object.entries(TYPES).map(([k,l])=>`<button type="button" class="pill" data-type="${k}" aria-pressed="${t.type===k}">${l}</button>`).join("")}</div></div>
     <label class="f"><span class="lbl muted">${t.type==="birthday"?"Vem fyller år?":"Vad heter det?"}</span><input id="ed-name" value="${esc(t.name)}" placeholder="${t.type==="birthday"?"Kian":isW?"Simskola":"Midsommar"}" maxlength="40" autocomplete="off"></label>
     ${isW?`<label class="f"><span class="lbl muted">Vilken dag?</span><select id="ed-wd">${[1,2,3,4,5,6,0].map(i=>`<option value="${i}" ${+t.weekday===i?"selected":""}>${WD[i][0].toUpperCase()+WD[i].slice(1)}</option>`).join("")}</select></label>`
         :t.movable&&t.type==="yearly"?`<p class="f muted">Datumet flyttar sig och räknas ut automatiskt varje år.</p>`
-        :`<label class="f"><span class="lbl muted">${t.type==="birthday"?"Födelsedag":"Datum"}</span><input id="ed-date" type="date" value="${esc(t.date||"")}"></label>`}
+        :`<label class="f"><span class="lbl muted">${t.type==="birthday"?"Födelsedag":"Datum"}</span><span class="dw"><input id="ed-date" type="date" required value="${esc(t.date||"")}"><span class="dph" aria-hidden="true">Välj datum</span></span></label>`}
     <div class="f"><span class="lbl muted">Färg på lappen</span><div class="swatches">${COLORS.map(k=>`<button type="button" class="sw" data-color="${k}" style="background:var(--${k})" aria-pressed="${t.color===k}" aria-label="Färg ${k.slice(1)}"></button>`).join("")}</div></div>
     ${err?`<p class="err" role="alert">${err}</p>`:""}
     <div class="acts"><button type="button" class="pill" data-act="cancel">Avbryt</button><button class="pill c4" type="submit">Sätt upp</button></div>
   </form>`;
-  document.getElementById("ed-name").focus();
+  if(!matchMedia("(max-width:760px)").matches||err)document.getElementById("ed-name").focus();
 }
 const closeEditor=()=>{document.getElementById("ed")?.remove();draft=null};
 function readDraft(){draft.name=document.getElementById("ed-name").value.trim();const dt=document.getElementById("ed-date"),wd=document.getElementById("ed-wd");if(dt)draft.date=dt.value;if(wd)draft.weekday=+wd.value}
