@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Integritetspolicy · Planeraren</title>
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<style>
+:root{color-scheme:light dark;--bg:#fff8ec;--fg:#1d1740;--muted:#5b5578;--line:#1d1740;--card:#ffffff}
+@media (prefers-color-scheme:dark){:root{--bg:#16122e;--fg:#f4f0ff;--muted:#bdb6dc;--line:#f4f0ff;--card:#221c44}}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 Nunito,"Helvetica Neue",Arial,sans-serif}
+main{max-width:720px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .1em}
+h2{font-size:1.2rem;margin:1.8em 0 .3em}
+p,li{margin:.4em 0}
+.muted{color:var(--muted)}
+a{color:inherit}
+nav{display:flex;gap:16px;flex-wrap:wrap;font-weight:700;margin-bottom:24px}
+</style>
+</head>
+<body>
+<main>
+<nav><a href="/">Planeraren</a><a href="/integritet">Integritet</a><a href="/villkor">Villkor</a></nav>
+<h1>Integritetspolicy</h1>
+<p class="muted">Senast ändrad 23 november 2026</p>
+<p>Planeraren är en familjeplanerare med en delad kalender, hämta och lämna och kylskåpslappar med nedräkningar. Den drivs privat för familjer som bjudits in. Här står vilka uppgifter som sparas, varför och hur du tar bort dem.</p>
+
+<h2>Vad som sparas</h2>
+<ul>
+<li><strong>Inloggning.</strong> Du loggar in med Google via tjänsten Clerk. Clerk sparar ditt namn, din e-postadress och din profilbild från Google, och håller din Google-koppling.</li>
+<li><strong>Familjens data.</strong> Familjens namn, inbjudningskoden, medlemmarnas namn och färger, lapparna på kylskåpet, anteckningar i planeraren och inställningar för hämta och lämna. Detta sparas i databasen Convex och syns bara för medlemmarna i samma familj.</li>
+<li><strong>Dina egna inställningar.</strong> Vilka kalendrar du har valt och vem du är i hämta och lämna. Sparas i Convex.</li>
+<li><strong>På din enhet.</strong> Utseende (ljust eller mörkt läge, valda flikar) och en tillfällig kopia av kalenderhändelser sparas i webbläsaren så att sidan går snabbt. Detta tas bort när du loggar ut.</li>
+</ul>
+
+<h2>Google Kalender</h2>
+<p>Om du väljer att koppla Google Kalender ber Planeraren om behörighet att läsa listan över dina kalendrar och att läsa, skapa och ändra händelser. Behörigheten används bara för att visa familjens händelser i Planeraren och för att lägga in eller ändra händelser när du själv ber om det.</p>
+<ul>
+<li>Googles åtkomstnyckel ligger hos Clerk och hämtas av servern bara när ett kalenderanrop görs. Den skickas aldrig till webbläsaren.</li>
+<li>Kalenderhändelser sparas inte i databasen. Händelser som du själv väljer att sätta upp som lappar på kylskåpet sparas där med namn och datum.</li>
+<li>Planerarens användning av information från Googles API:er följer <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, inklusive kraven på begränsad användning (Limited Use).</li>
+</ul>
+
+<h2>Vad som inte görs</h2>
+<ul>
+<li>Inga uppgifter säljs eller lämnas ut till andra.</li>
+<li>Ingen reklam och ingen spårning för reklam.</li>
+<li>Uppgifter från Google används inte för att träna AI-modeller.</li>
+</ul>
+
+<h2>Tjänster som används</h2>
+<p>Clerk (inloggning), Convex (databas och serverfunktioner), Vercel (webbplatsen) och Google (inloggning och kalender). De behandlar uppgifterna för Planerarens räkning för att tjänsten ska fungera.</p>
+
+<h2>Ta bort dina uppgifter</h2>
+<ul>
+<li><strong>Lämna familjen:</strong> öppna familjens meny i Planeraren och välj <em>Lämna familjen</em>. Ditt medlemskap och dina inställningar tas bort. Är du sist kvar tas hela familjens data bort.</li>
+<li><strong>Koppla bort Google:</strong> ta bort Planeraren under <a href="https://myaccount.google.com/permissions">Tredjepartsappar och tjänster</a> i ditt Google-konto.</li>
+<li><strong>Ta bort kontot helt:</strong> kontakta den som bjöd in dig eller supportadressen som visas när du kopplar Google, så tas inloggningen bort hos Clerk.</li>
+</ul>
+
+<h2>Frågor</h2>
+<p>Hör av dig till supportadressen som visas på Googles inloggningsskärm för Planeraren.</p>
+</main>
+</body>
+</html>

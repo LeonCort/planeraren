@@ -4,6 +4,24 @@
   "buildCommand": "if [ -n \"$CONVEX_DEPLOY_KEY\" ]; then npx convex deploy --cmd 'npm run build' --cmd-url-env-var-name VITE_CONVEX_URL; else npm run build; fi",
   "outputDirectory": "dist",
   "headers": [
-    { "source": "/app/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] }
+    {
+      "source": "/app/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/integritet",
+      "destination": "/integritet.html"
+    },
+    {
+      "source": "/villkor",
+      "destination": "/villkor.html"
+    }
   ]
 }

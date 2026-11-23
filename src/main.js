@@ -98,7 +98,7 @@ async function fetchToken({ forceRefreshToken } = {}) {
 /* ---------- sign in ---------- */
 function signInView() {
   const card = show(
-    `${brand}<p class="glead">Familjens kalender, hämta &amp; lämna och kylskåpet med nedräkningar. Logga in för att börja.</p><div id="signin"></div>`,
+    `${brand}<p class="glead">Familjens kalender, hämta &amp; lämna och kylskåpet med nedräkningar. Logga in för att börja.</p><div id="signin"></div><p class="gswap"><a class="glink" href="/integritet">Integritet</a> · <a class="glink" href="/villkor">Villkor</a></p>`,
   );
   clerk.mountSignIn(card.querySelector("#signin"), {
     forceRedirectUrl: location.href,
